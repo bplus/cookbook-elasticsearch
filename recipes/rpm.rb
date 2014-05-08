@@ -31,5 +31,14 @@ template "elasticsearch.yml" do
   source "elasticsearch.yml.erb"
   owner node.elasticsearch[:user] and group node.elasticsearch[:user] and mode 0755
 
-  notifies :restart, lazy 'service[elasticsearch]', :delayed unless node.elasticsearch[:skip_restart]
+  notifies :run, "bash[restart-elasticsearch]", :delayed unless node.elasticsearch[:skip_restart]
+end
+
+bash "restart-elasticsearch" do
+	user 'root'
+	group 'root'
+	code <<-EOF
+	/sbin/service elasticsearch restart
+	EOF
+	action :nothing
 end
