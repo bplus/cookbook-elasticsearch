@@ -15,6 +15,15 @@ rpm_package "#{Chef::Config[:file_cache_path]}/#{filename}" do
   action :install
 end
 
+bash "chkconfig_elasticsearch" do
+	user 'root'
+	group 'root'
+	code <<-EOF
+	/sbin/chkconfig --add elasticsearch
+	EOF
+	not_if "/sbin/chkconfig --list |grep -q elasticsearch"
+end
+
 # Create ES config file
 #
 template "elasticsearch.yml" do
